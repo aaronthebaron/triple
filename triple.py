@@ -3,19 +3,19 @@ import string
 
 def clean_string(input_string):
     removal_map = str.maketrans({
-        '\n': ' ',
-        '\r': ' ',
-        '.': None,
+        '\n': ' ignr ',
+        '\r': ' ignr ',
+        '.': ' ignr ',
         '$': None,
         '#': None,
         '@': None,
-        '?': None,
-        '!': None,
-        ',': None,
+        '?': ' ignr ',
+        '!': ' ignr ',
+        ',': ' ignr ',
         '(': None,
         ')': None,
-        ':': None,
-        ';': None
+        ':': ' ignr ',
+        ';': ' ignr '
     })
     output_string = input_string.translate(removal_map).lower()  
 
@@ -29,13 +29,14 @@ def find_sequential_duplicates(input_string):
     positions = []
     words = []
     for i, word in enumerate(strings_list):
-        if strings_list.count(word) > 1:
+        if word != 'ignr' and word != '' and strings_list.count(word) > 1:
             positions.append(i)
             words.append(word)
 
     zipped_copy = zip(positions, words)
     list_length = len(positions)
-    for i, word in zipped_copy:     #Remove non-sequential entries since they can't be pairs
+    """Remove non-sequential entries since they can't be pairs"""
+    for i, word in zipped_copy:
         current_index = positions.index(i)
         last_num = None
         next_num = None
@@ -64,17 +65,36 @@ def find_sequential_duplicates(input_string):
             del positions[i]
             del words[i]
 
-    duplicates.append(positions)
-    duplicates.append(words)
-
+    if len(positions) == len(words):
+        duplicates.append(positions)
+        duplicates.append(words)
+    else:
+        raise ValueError('Words and positions lists are unequal length. Something bad has happened.')
     return duplicates
 
 
 def find_pairs(input_string):
     duplicates = find_sequential_duplicates(input_string)
-    print(duplicates)
-    
+    positions = duplicates[0]
+    words = duplicates[1]
+    pairs = {}
+    length = len(positions)
 
+    """Iterate across list and incrementing extant pairs and reverse pairs. Then clean out single pairs."""
+    for i, word in enumerate(words):
+        if (i + 1) < length and positions[i + 1] - positions[i] == 1:
+            pair = '{} {}'.format(word, words[i + 1])
+            pair_reversed = '{} {}'.format(words[i + 1], word)
+            if pair not in pairs and pair_reversed not in pairs:
+                pairs[pair] = 1
+            else:
+                if pair_reversed in pairs:
+                    pairs[pair_reversed] = pairs[pair_reversed] + 1
+                else:
+                    pairs[pair] = pairs[pair] + 1
+
+    pairs = dict((k, v) for k, v in pairs.items() if v > 1)
+    return pairs
 
 
 if __name__ == '__main__':
@@ -83,4 +103,5 @@ if __name__ == '__main__':
         exit(1)
     else:
         input_string = str(sys.argv[1])
-        find_pairs(input_string)
+        pairs = find_pairs(input_string)
+        print(pairs)
