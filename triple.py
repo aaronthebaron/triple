@@ -106,5 +106,8 @@ if __name__ == '__main__':
     else:
         input_string = str(sys.argv[1])
         pairs = find_pairs(input_string)
-        for pair, num in pairs.items():
-            print('{}: {}'.format(pair, num))
+        if pairs:
+            for pair, num in pairs.items():
+                print('{}: {}'.format(pair, num))
+        else:
+            print("No pairs found in string.")
