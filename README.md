@@ -21,5 +21,3 @@ Are you: 2
 #### Dependencies:
     
     Python 3
-    Flask
-    Jinja2
