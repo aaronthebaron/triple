@@ -2,6 +2,7 @@ import sys
 import string
 
 def clean_string(input_string):
+    """We can't simply remove punctuation. We need there to be a count difference in the position because one of the rules is that pairs only count if separated by white space."""
     removal_map = str.maketrans({
         '\n': ' ignr ',
         '\r': ' ignr ',
@@ -33,10 +34,10 @@ def find_sequential_duplicates(input_string):
             positions.append(i)
             words.append(word)
 
-    zipped_copy = zip(positions, words)
+    zipped = zip(positions, words)
     list_length = len(positions)
     """Remove non-sequential entries since they can't be pairs"""
-    for i, word in zipped_copy:
+    for i, word in zipped:
         current_index = positions.index(i)
         last_num = None
         next_num = None
@@ -60,6 +61,7 @@ def find_sequential_duplicates(input_string):
             del words[current_index]
             list_length = list_length - 1
 
+    """Remove dupes that were orphaned by removing non-sequential dupes"""
     for i, word in enumerate(words):
         if words.count(word) == 1:
             del positions[i]
@@ -74,13 +76,13 @@ def find_sequential_duplicates(input_string):
 
 
 def find_pairs(input_string):
+    """Iterate across list and increment extant pairs and reverse pairs. Then clean out single pairs."""
     duplicates = find_sequential_duplicates(input_string)
     positions = duplicates[0]
     words = duplicates[1]
     pairs = {}
     length = len(positions)
 
-    """Iterate across list and incrementing extant pairs and reverse pairs. Then clean out single pairs."""
     for i, word in enumerate(words):
         if (i + 1) < length and positions[i + 1] - positions[i] == 1:
             pair = '{} {}'.format(word, words[i + 1])
@@ -104,4 +106,5 @@ if __name__ == '__main__':
     else:
         input_string = str(sys.argv[1])
         pairs = find_pairs(input_string)
-        print(pairs)
+        for pair, num in pairs.items():
+            print('{}: {}'.format(pair, num))
