@@ -47,7 +47,7 @@ def find_sequential_duplicates(input_string):
         if current_index < list_length - 1: 
             next_num = positions[current_index + 1]
 
-        if next_num and last_num:
+        if next_num != None and last_num != None:
             if i - last_num != 1 and next_num - i != 1:
                 remove_item = True
         else:
